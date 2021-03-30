@@ -43,7 +43,7 @@ module.exports.getRestaurantById = asyncHandler(async (req, res, next) => {
 
 	let result = await pool.query(query);
 
-	res.send({ success: true, data: result.rows, count: result.rowCount });
+	res.send({ success: true, data: result.rows[0], count: result.rowCount });
 });
 
 module.exports.updateRestaurantById = asyncHandler(async (req, res, next) => {
@@ -56,12 +56,12 @@ module.exports.updateRestaurantById = asyncHandler(async (req, res, next) => {
 	}
 
 	const query = {
-		text: `UPDATE restaurants SET ${ Object.keys(body).map((column, idx) => `${column}=$${idx+1}`) } WHERE id=${resId}`,
+		text: `UPDATE restaurants SET ${ Object.keys(body).map((column, idx) => `${column}=$${idx+1}`) } WHERE id=${resId} returning *`,
 		values: [...Object.values(body)],
 	};
 
 	let result = await pool.query(query);
-	res.status(200).send({ success: true, message:"Data Updated Successfully!"});
+	res.status(200).send({ success: true, data: result.rows[0], message:"Data Updated Successfully!"});
 
 });
 module.exports.deleteRestaurantById = asyncHandler(async (req, res, next) => {
@@ -85,11 +85,11 @@ module.exports.createRestaurantById = asyncHandler(async (req, res, next) => {
 	const data = { ...req.body }
 
 	const query = {
-		text: "insert into restaurants (name, location, price_range) values($1, $2, $3)",
+		text: "insert into restaurants (name, location, price_range) values($1, $2, $3)  returning *",
 		values: [data.name, data.location, data.price_range],
 	};
 
 	let result = await pool.query(query);
 
-	res.status(201).send({ success: true, message:"Data Added Successfully!"});
+	res.status(201).send({ success: true, message:"Data Added Successfully!", data: result.rows[0]});
 });
