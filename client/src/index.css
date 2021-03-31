@@ -6,3 +6,7 @@
 	font-weight: bolder;
 	color: yellow;
 }
+
+.rating span {
+	margin: 0.1rem;
+}
