@@ -18,7 +18,8 @@ const RestaurantList = () => {
 		fetchData();
 	}, [setrestaurants]);
 
-	const deleteRest = async (resId) => {
+	const deleteRest = async (e, resId) => {
+		e.stopPropagation();
 		try {
 			await RestaurantFinder.delete(`/${resId}`);
 			setrestaurants((prevRest) =>
@@ -42,24 +43,27 @@ const RestaurantList = () => {
 				</thead>
 				<tbody>
 					{restaurants.map((restaurant) => (
-						<tr key={restaurant.id}>
-							<td>{restaurant.name}</td>
+						<tr className="det-link" key={restaurant.id}>
+							<td onClick={() => history.push(`/restaurants/${restaurant.id}`)}>
+								<span>{restaurant.name}</span>
+							</td>
 							<td>{restaurant.location}</td>
 							<td>{"$".repeat(restaurant.price_range)}</td>
 							<td>Ratings</td>
 							<td>
 								<button
 									className="btn btn-warning"
-									onClick={() =>
-										history.push(`/restaurants/${restaurant.id}/update`)
-									}
+									onClick={(e) => {
+										e.stopPropagation();
+										history.push(`/restaurants/${restaurant.id}/update`);
+									}}
 								>
-									Edit
+									Update
 								</button>
 							</td>
 							<td>
 								<button
-									onClick={() => deleteRest(restaurant.id)}
+									onClick={(e) => deleteRest(e, restaurant.id)}
 									className="btn btn-danger"
 								>
 									Delete

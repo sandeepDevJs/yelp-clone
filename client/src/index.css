@@ -1,0 +1,8 @@
+.det-link span {
+	cursor: pointer;
+}
+
+.det-link:hover span {
+	font-weight: bolder;
+	color: yellow;
+}
