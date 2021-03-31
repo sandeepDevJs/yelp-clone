@@ -1,23 +1,31 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { GetRestContext } from "../contexts/RestaurantsProvider";
 
 const RestaurantList = () => {
+	const { restaurants, setrestaurants } = GetRestContext();
+	const history = useHistory();
 
-	const { restaurants, setrestaurants } = GetRestContext()
-	
 	useEffect(() => {
-		const fetchData = async () =>{
+		const fetchData = async () => {
 			try {
-				let response = await RestaurantFinder.get("/") 
-				setrestaurants(response.data.data)
-			} catch (error) {
-				
-			}
-		}
+				let response = await RestaurantFinder.get("/");
+				setrestaurants(response.data.data);
+			} catch (error) {}
+		};
 
-		fetchData()
-	}, [setrestaurants])
+		fetchData();
+	}, [setrestaurants]);
+
+	const deleteRest = async (resId) => {
+		try {
+			await RestaurantFinder.delete(`/${resId}`);
+			setrestaurants((prevRest) =>
+				prevRest.filter((rests) => rests.id !== resId)
+			);
+		} catch (err) {}
+	};
 
 	return (
 		<div className="list-group">
@@ -33,22 +41,32 @@ const RestaurantList = () => {
 					</tr>
 				</thead>
 				<tbody>
-					{ restaurants.map(restaurant => (
-						
+					{restaurants.map((restaurant) => (
 						<tr key={restaurant.id}>
-						<td>{restaurant.name}</td>
-						<td>{restaurant.location}</td>
-						<td>{"$".repeat(restaurant.price_range)}</td>
-						<td>Ratings</td>
-						<td>
-							<button className="btn btn-warning">Edit</button>
-						</td>
-						<td>
-							<button className="btn btn-danger">Delete</button>
-						</td>
-					</tr>
-
-					)) }
+							<td>{restaurant.name}</td>
+							<td>{restaurant.location}</td>
+							<td>{"$".repeat(restaurant.price_range)}</td>
+							<td>Ratings</td>
+							<td>
+								<button
+									className="btn btn-warning"
+									onClick={() =>
+										history.push(`/restaurants/${restaurant.id}/update`)
+									}
+								>
+									Edit
+								</button>
+							</td>
+							<td>
+								<button
+									onClick={() => deleteRest(restaurant.id)}
+									className="btn btn-danger"
+								>
+									Delete
+								</button>
+							</td>
+						</tr>
+					))}
 				</tbody>
 			</table>
 		</div>

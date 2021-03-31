@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { GetRestContext } from "../contexts/RestaurantsProvider";
 
@@ -7,10 +7,13 @@ const AddRestaurant = () => {
 	const locationRef = useRef();
 	const priceRef = useRef();
 
+	const [loading, setloading] = useState(false);
+
 	const { addRestaurants } = GetRestContext();
 
 	const onSubmitHandler = async (e) => {
 		e.preventDefault();
+		setloading(true);
 		try {
 			let res = await RestaurantFinder.post(
 				"/",
@@ -23,7 +26,10 @@ const AddRestaurant = () => {
 			);
 
 			addRestaurants(res.data.data);
-		} catch (error) {}
+			setloading(false);
+		} catch (error) {
+			setloading(false);
+		}
 	};
 
 	return (
@@ -36,6 +42,7 @@ const AddRestaurant = () => {
 							placeholder="name"
 							className="form-control"
 							ref={nameRef}
+							required
 						/>
 					</div>
 
@@ -45,11 +52,12 @@ const AddRestaurant = () => {
 							placeholder="location"
 							className="form-control"
 							ref={locationRef}
+							required
 						/>
 					</div>
 
 					<div className="col">
-						<select className="form-control" ref={priceRef}>
+						<select className="form-control" ref={priceRef} required>
 							<option disabled> Price Range </option>
 							<option value="1">$</option>
 							<option value="2">$$</option>
@@ -60,7 +68,11 @@ const AddRestaurant = () => {
 					</div>
 
 					<div className="col">
-						<button type="submit" className="btn btn-primary">
+						<button
+							type="submit"
+							disabled={loading}
+							className="btn btn-primary"
+						>
 							Add
 						</button>
 					</div>
