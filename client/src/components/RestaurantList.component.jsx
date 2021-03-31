@@ -1,6 +1,24 @@
-import React from "react";
+import React, {useEffect} from "react";
+import RestaurantFinder from "../apis/RestaurantFinder";
+import { GetRestContext } from "../contexts/RestaurantsProvider";
 
 const RestaurantList = () => {
+
+	const { restaurants, setrestaurants } = GetRestContext()
+	
+	useEffect(() => {
+		const fetchData = async () =>{
+			try {
+				let response = await RestaurantFinder.get("/") 
+				setrestaurants(response.data.data)
+			} catch (error) {
+				
+			}
+		}
+
+		fetchData()
+	}, [setrestaurants])
+
 	return (
 		<div className="list-group">
 			<table className="table table-hover table-dark">
@@ -15,10 +33,12 @@ const RestaurantList = () => {
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>abc</td>
-						<td>nyc</td>
-						<td>$$$</td>
+					{ restaurants.map(restaurant => (
+						
+						<tr key={restaurant.id}>
+						<td>{restaurant.name}</td>
+						<td>{restaurant.location}</td>
+						<td>{"$".repeat(restaurant.price_range)}</td>
 						<td>Ratings</td>
 						<td>
 							<button className="btn btn-warning">Edit</button>
@@ -27,6 +47,8 @@ const RestaurantList = () => {
 							<button className="btn btn-danger">Delete</button>
 						</td>
 					</tr>
+
+					)) }
 				</tbody>
 			</table>
 		</div>

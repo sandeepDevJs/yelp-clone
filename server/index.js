@@ -4,10 +4,12 @@ const morgan = require("morgan");
 const errorHandler = require("./middlewares/errorHandler");
 const notFoundHandler = require("./middlewares/notFoundHandler");
 const routes = require("./routes/index");
+const cors = require("cors")
 
 dotenv.config({ path: "./config/config.env" });
 const app = express();
 
+app.use(cors())
 app.use(express.json());
 
 if (process.env.NODE_ENV === "development") {
